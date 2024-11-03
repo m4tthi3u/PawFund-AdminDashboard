@@ -1,0 +1,40 @@
+.sidebar {
+    background-color: #f8f9fa;
+    width: 250px;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  .sidebar-button {
+    @apply w-full text-left px-4 py-2 my-2 bg-white rounded-lg shadow hover:bg-gray-100 transition-colors duration-200;
+    font-size: 16px;
+    color: #343a40;
+  }
+  
+  .sidebar-button:hover {
+    background-color: #e9ecef;
+  }
+  
+  .sidebar-button.active {
+    background-color: #dee2e6;
+  }
+  
+  .sidebar .logo {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .sidebar .logo img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .sidebar .menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar .menu-item {
+    margin-bottom: 15px;
+  }
