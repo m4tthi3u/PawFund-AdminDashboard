@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { api } from '../../services/api';
 import './admin-dashboard.scss';
 
@@ -11,7 +11,8 @@ const PetManagement = () => {
   const [petsPerPage] = useState(10);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-const [selectedPet, setSelectedPet] = useState(null);
+  const [selectedPet, setSelectedPet] = useState(null);
+  const [userPets, setUserPets] = useState([]);
   const [editingPet, setEditingPet] = useState({
     name: "",
     species: "",
@@ -25,16 +26,16 @@ const [selectedPet, setSelectedPet] = useState(null);
   });
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-const [newPet, setNewPet] = useState({
-  name: "",
-  species: "",
-  breed: "",
-  age: 0,
-  gender: "",
-  description: "",
-  imageUrl: "",
-  shelterId: 0
-});
+  const [newPet, setNewPet] = useState({
+    name: "",
+    species: "",
+    breed: "",
+    age: 0,
+    gender: "",
+    description: "",
+    imageUrl: "",
+    shelterId: 0
+  });
 
   useEffect(() => {
     fetchPets();
@@ -50,8 +51,18 @@ const [newPet, setNewPet] = useState({
       setLoading(false);
     }
   };
+  const fetchUserPetDetails = async (petId) => {
+    try {
+      const response = await api.get('/api/UserPet/mypets');
+      const userPetData = response.data.find(up => up.petId === petId);
+      return userPetData; // Now includes user object directly
+    } catch (err) {
+      console.error('Failed to fetch user pet details:', err);
+      return null;
+    }
+  };
 
-  const filteredPets = pets.filter(pet => 
+  const filteredPets = pets.filter(pet =>
     pet.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -76,11 +87,19 @@ const [newPet, setNewPet] = useState({
     setIsEditModalOpen(true);
   };
 
-  const handleDetailsClick = (pet) => {
+  const handleDetailsClick = async (pet) => {
     setSelectedPet(pet);
+    const userPetDetails = await fetchUserPetDetails(pet.id);
+    setSelectedPet(prev => ({
+      ...prev,
+      userId: userPetDetails?.userId || 'No owner',
+      username: userPetDetails?.user?.username || 'Unknown',
+      email: userPetDetails?.user?.email || 'No email',
+      adoptionDate: userPetDetails?.adoptionDate || 'Not adopted',
+      adoptionStatus: userPetDetails?.status || 'No status'
+    }));
     setIsDetailsModalOpen(true);
   };
-
   const handleAddPet = async (e) => {
     e.preventDefault();
     try {
@@ -88,21 +107,21 @@ const [newPet, setNewPet] = useState({
       setIsAddModalOpen(false);
       setNewPet({
         name: "",
-  species: "",
-  breed: "",
-  age: 0,
-  gender: "",
-  description: "",
-  imageUrl: "",
-  shelterId: 0
+        species: "",
+        breed: "",
+        age: 0,
+        gender: "",
+        description: "",
+        imageUrl: "",
+        shelterId: 0
       });
       fetchPets();
-  } catch (err) {
-    setError('Failed to add pet');
-  }
-};
+    } catch (err) {
+      setError('Failed to add pet');
+    }
+  };
 
-const handleStatusUpdate = async (petId, newStatus) => {
+  const handleStatusUpdate = async (petId, newStatus) => {
     try {
       await api.post(`/api/Pets/AdoptPet/${petId}`, { status: newStatus });
       fetchPets(); // Refresh the pet list
@@ -128,7 +147,7 @@ const handleStatusUpdate = async (petId, newStatus) => {
     for (let i = 1; i <= totalPages; i++) {
       pageNumbers.push(i);
     }
-  
+
     return (
       <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
         <div className="flex-1 flex items-center justify-between">
@@ -167,7 +186,7 @@ const handleStatusUpdate = async (petId, newStatus) => {
                 key={number}
                 onClick={() => setCurrentPage(number)}
                 className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md
-                  ${currentPage === number 
+                  ${currentPage === number
                     ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
                     : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50'
                   }`}
@@ -199,7 +218,7 @@ const handleStatusUpdate = async (petId, newStatus) => {
 
   const renderDetailsModal = () => {
     if (!isDetailsModalOpen || !selectedPet) return null;
-  
+
     return (
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
         <div className="bg-white p-6 rounded-lg shadow-xl w-[900px] max-h-[80vh] overflow-y-auto">
@@ -213,12 +232,11 @@ const handleStatusUpdate = async (petId, newStatus) => {
               ×
             </button>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-6">
-            {/* Left column - Image */}
             <div className="h-full">
-              <img 
-                src={selectedPet.imageUrl} 
+              <img
+                src={selectedPet.imageUrl}
                 alt={selectedPet.name}
                 className="w-full h-[400px] object-cover rounded-lg shadow-md"
                 onError={(e) => {
@@ -227,18 +245,46 @@ const handleStatusUpdate = async (petId, newStatus) => {
                 }}
               />
             </div>
-  
-            {/* Right column - Details */}
+
             <div className="grid grid-cols-2 gap-4 content-start">
-              {Object.entries(selectedPet).map(([key, value]) => (
-                <div key={key} className="col-span-2 flex items-center border-b border-gray-200 py-2">
-                  <span className="font-medium text-gray-600 w-1/3 capitalize">
-                    {key}:
-                  </span>
-                  <span className="text-gray-800 w-2/3">
-                    {typeof value === 'boolean' ? value.toString() : value}
-                  </span>
+              {/* Owner Information Section */}
+              <div className="col-span-2 bg-gray-50 p-4 rounded-lg mb-4">
+                <h3 className="font-bold text-lg mb-2">Owner Information</h3>
+                <div className="grid gap-2">
+                  <div className="flex justify-between">
+                    <span className="font-medium">User ID:</span>
+                    <span>{selectedPet.userId}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Username:</span>
+                    <span>{selectedPet.username}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Email:</span>
+                    <span>{selectedPet.email}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Adoption Date:</span>
+                    <span>{new Date(selectedPet.adoptionDate).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Adoption Status:</span>
+                    <span>{selectedPet.adoptionStatus}</span>
+                  </div>
                 </div>
+              </div>
+              {/* Existing pet details */}
+              {Object.entries(selectedPet).map(([key, value]) => (
+                !['userId', 'adoptionDate', 'adoptionStatus'].includes(key) && (
+                  <div key={key} className="col-span-2 flex items-center border-b border-gray-200 py-2">
+                    <span className="font-medium text-gray-600 w-1/3 capitalize">
+                      {key}:
+                    </span>
+                    <span className="text-gray-800 w-2/3">
+                      {typeof value === 'boolean' ? value.toString() : value}
+                    </span>
+                  </div>
+                )
               ))}
             </div>
           </div>
@@ -257,7 +303,7 @@ const handleStatusUpdate = async (petId, newStatus) => {
 
   const renderAddModal = () => {
     if (!isAddModalOpen) return null;
-  
+
     return (
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
         <div className="bg-white p-6 rounded-lg shadow-xl w-96">
@@ -343,9 +389,6 @@ const handleStatusUpdate = async (petId, newStatus) => {
     );
   };
 
-  
-
-
   if (loading) return (
     <div className="flex justify-center items-center h-64">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -357,12 +400,12 @@ const handleStatusUpdate = async (petId, newStatus) => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Pet Management</h2>
         <div className="flex space-x-4">
-        <button
-      onClick={() => setIsAddModalOpen(true)}
-      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-    >
-      Add Pet
-    </button>
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Add Pet
+          </button>
           <input
             type="text"
             placeholder="Search pets..."
@@ -387,9 +430,9 @@ const handleStatusUpdate = async (petId, newStatus) => {
             {currentPets.map((pet) => (
               <tr key={pet.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <img 
-                    src={pet.imageUrl} 
-                    alt={pet.name} 
+                  <img
+                    src={pet.imageUrl}
+                    alt={pet.name}
                     className="h-16 w-16 rounded-full object-cover"
                   />
                 </td>
@@ -400,12 +443,12 @@ const handleStatusUpdate = async (petId, newStatus) => {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                <button
-    onClick={() => handleDetailsClick(pet)}
-    className="text-purple-600 hover:text-purple-900 px-3 py-1 rounded-md text-sm font-medium"
-  >
-    Details
-  </button>
+                  <button
+                    onClick={() => handleDetailsClick(pet)}
+                    className="text-purple-600 hover:text-purple-900 px-3 py-1 rounded-md text-sm font-medium"
+                  >
+                    Details
+                  </button>
                   <button
                     onClick={() => handleDeletePet(pet.id)}
                     className="text-red-600 hover:text-red-900 px-3 py-1 rounded-md text-sm font-medium"
@@ -415,32 +458,30 @@ const handleStatusUpdate = async (petId, newStatus) => {
                   <button
                     onClick={() => handleEditClick(pet)}
                     className="text-blue-600 hover:text-blue-900 px-3 py-1 rounded-md text-sm font-medium"
-                    >
+                  >
                     Update
-                </button>
-                {pet.status === 'Available' && (
-    <>
-      <button
-        onClick={() => handleStatusUpdate(pet.id, 'Pending')}
-        className="text-yellow-600 hover:text-yellow-900 px-3 py-1 rounded-md text-sm font-medium"
-      >
-        Mark as Pending
-      </button>
-      <button
-        onClick={() => handleStatusUpdate(pet.id, 'Adopted')}
-        className="text-green-600 hover:text-green-900 px-3 py-1 rounded-md text-sm font-medium"
-      >
-        Mark as Adopted
-      </button>
-    </>
-  )}
+                  </button>
+                  {pet.status === 'Available' && (
+                    <>
+                      <button
+                        onClick={() => handleStatusUpdate(pet.id, 'Pending')}
+                        className="text-yellow-600 hover:text-yellow-900 px-3 py-1 rounded-md text-sm font-medium"
+                      >
+                        Mark as Pending
+                      </button>
+                      <button
+                        onClick={() => handleStatusUpdate(pet.id, 'Adopted')}
+                        className="text-green-600 hover:text-green-900 px-3 py-1 rounded-md text-sm font-medium"
+                      >
+                        Mark as Adopted
+                      </button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        
-        
       </div>
       {renderEditModal()}
       {renderPagination()}
