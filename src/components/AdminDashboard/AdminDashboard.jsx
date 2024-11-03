@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import UserManagement from './UserManagement';
 import PetManagement from './PetManagement';
+import EventManagement from './EventManagement';
 import './admin-dashboard.scss';
 
 const AdminDashboard = () => {
@@ -48,6 +49,7 @@ const AdminDashboard = () => {
             <Route path="users" element={<UserManagement />} />
             <Route path="/" element={<Navigate to="users" replace />} />
             <Route path="pets" element={<PetManagement />} />
+            <Route path="events" element={<EventManagement />} />
           </Routes>
         </main>
       </div>
