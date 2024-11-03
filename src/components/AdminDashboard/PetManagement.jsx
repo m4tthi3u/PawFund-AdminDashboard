@@ -10,6 +10,8 @@ const PetManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [petsPerPage] = useState(10);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+const [selectedPet, setSelectedPet] = useState(null);
   const [editingPet, setEditingPet] = useState({
     name: "",
     species: "",
@@ -72,6 +74,11 @@ const [newPet, setNewPet] = useState({
   const handleEditClick = (pet) => {
     setEditingPet(pet);
     setIsEditModalOpen(true);
+  };
+
+  const handleDetailsClick = (pet) => {
+    setSelectedPet(pet);
+    setIsDetailsModalOpen(true);
   };
 
   const handleAddPet = async (e) => {
@@ -183,6 +190,64 @@ const handleStatusUpdate = async (petId, newStatus) => {
             >
               <span className="sr-only">Last</span>
               ⟫
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderDetailsModal = () => {
+    if (!isDetailsModalOpen || !selectedPet) return null;
+  
+    return (
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+        <div className="bg-white p-6 rounded-lg shadow-xl w-[900px] max-h-[80vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">Pet Details</h2>
+            <button
+              onClick={() => setIsDetailsModalOpen(false)}
+              className="text-gray-400 hover:text-gray-500"
+            >
+              <span className="sr-only">Close</span>
+              ×
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-6">
+            {/* Left column - Image */}
+            <div className="h-full">
+              <img 
+                src={selectedPet.imageUrl} 
+                alt={selectedPet.name}
+                className="w-full h-[400px] object-cover rounded-lg shadow-md"
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/400';
+                  e.target.onerror = null;
+                }}
+              />
+            </div>
+  
+            {/* Right column - Details */}
+            <div className="grid grid-cols-2 gap-4 content-start">
+              {Object.entries(selectedPet).map(([key, value]) => (
+                <div key={key} className="col-span-2 flex items-center border-b border-gray-200 py-2">
+                  <span className="font-medium text-gray-600 w-1/3 capitalize">
+                    {key}:
+                  </span>
+                  <span className="text-gray-800 w-2/3">
+                    {typeof value === 'boolean' ? value.toString() : value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={() => setIsDetailsModalOpen(false)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Close
             </button>
           </div>
         </div>
@@ -335,6 +400,12 @@ const handleStatusUpdate = async (petId, newStatus) => {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
+                <button
+    onClick={() => handleDetailsClick(pet)}
+    className="text-purple-600 hover:text-purple-900 px-3 py-1 rounded-md text-sm font-medium"
+  >
+    Details
+  </button>
                   <button
                     onClick={() => handleDeletePet(pet.id)}
                     className="text-red-600 hover:text-red-900 px-3 py-1 rounded-md text-sm font-medium"
@@ -374,6 +445,7 @@ const handleStatusUpdate = async (petId, newStatus) => {
       {renderEditModal()}
       {renderPagination()}
       {renderAddModal()}
+      {renderDetailsModal()}
     </div>
   );
 };
