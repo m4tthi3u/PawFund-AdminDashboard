@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { FaHome, FaUsers, FaDog, FaMoneyBill, FaChartBar, FaPaw } from 'react-icons/fa';
+import { FaHome, FaUsers, FaDog, FaMoneyBill, FaChartBar, FaPaw, FaCalendar } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 const navItems = [
@@ -7,6 +7,7 @@ const navItems = [
   { name: 'Users', path: '/admin/users', icon: FaUsers },
   { name: 'Pets', path: '/admin/pets', icon: FaDog },
   { name: 'Donations', path: '/admin/donations', icon: FaMoneyBill },
+  { name: 'Events', path: '/admin/events', icon: FaCalendar },
   { name: 'Statistics', path: '/admin/statistics', icon: FaChartBar },
 ];
 
