@@ -17,10 +17,10 @@ const UserManagement = () => {
   });
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newUser, setNewUser] = useState({
-  username: "",
-  email: "",
-  password: ""
-});
+    username: "",
+    email: "",
+    password: ""
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -73,7 +73,7 @@ const UserManagement = () => {
     for (let i = 1; i <= totalPages; i++) {
       pageNumbers.push(i);
     }
-  
+
     return (
       <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
         <div className="flex-1 flex items-center justify-between">
@@ -112,7 +112,7 @@ const UserManagement = () => {
                 key={number}
                 onClick={() => setCurrentPage(number)}
                 className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md
-                  ${currentPage === number 
+                  ${currentPage === number
                     ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
                     : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50'
                   }`}
@@ -144,7 +144,7 @@ const UserManagement = () => {
 
   const renderAddModal = () => {
     if (!isAddModalOpen) return null;
-  
+
     return (
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
         <div className="bg-white p-6 rounded-lg shadow-xl w-96">
@@ -212,7 +212,7 @@ const UserManagement = () => {
 
   const renderEditModal = () => {
     if (!isEditModalOpen) return null;
-  
+
     return (
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
         <div className="bg-white p-6 rounded-lg shadow-xl w-96">
@@ -253,9 +253,7 @@ const UserManagement = () => {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
                 <option value="Guest">Guest</option>
-                <option value="Adopter">Adopter</option>
-                <option value="Volunteer">Volunteer</option>
-                <option value="Donor">Donor</option>
+                <option value="User">User</option>
                 <option value="Staff">Staff</option>
                 <option value="Admin">Admin</option>
               </select>
@@ -282,9 +280,9 @@ const UserManagement = () => {
   };
 
 
-    
 
-  const filteredUsers = users.filter(user => 
+
+  const filteredUsers = users.filter(user =>
     user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -317,12 +315,12 @@ const UserManagement = () => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">User Management</h2>
         <div className="flex space-x-4">
-        <button
-      onClick={() => setIsAddModalOpen(true)}
-      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-    >
-      Add User
-    </button>
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Add User
+          </button>
           <input
             type="text"
             placeholder="Search users..."
@@ -361,18 +359,18 @@ const UserManagement = () => {
                     Delete
                   </button>
                   <button
-    onClick={() => handleEditClick(user)}
-    className="text-blue-600 hover:text-blue-900 px-3 py-1 rounded-md text-sm font-medium"
-  >
-    Edit
-  </button>
+                    onClick={() => handleEditClick(user)}
+                    className="text-blue-600 hover:text-blue-900 px-3 py-1 rounded-md text-sm font-medium"
+                  >
+                    Edit
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        
-        
+
+
       </div>
       {renderEditModal()}
       {renderPagination()}

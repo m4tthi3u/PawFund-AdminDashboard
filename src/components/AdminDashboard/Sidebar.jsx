@@ -25,25 +25,25 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       {/* Navigation Section */}
       <nav className="mt-8 px-4">
         <div className="space-y-2">
-        {navItems.map((item) => (
-  <NavLink
-    key={item.name}
-    to={item.path}
-    className={({ isActive }) => `flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all duration-150 ease-in-out
-      ${isActive 
-        ? 'bg-blue-700/50 text-white shadow-lg transform scale-105'
-        : 'text-blue-100 hover:bg-blue-700/30 hover:text-white hover:translate-x-1'
-      }`
-    }
-  >
-    <item.icon 
-      className={({ isActive }) => `w-5 h-5 mr-3 transition-colors duration-150
+          {navItems.map((item) => (
+            <NavLink
+              key={item.name}
+              to={item.path}
+              className={({ isActive }) => `flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all duration-150 ease-in-out
+      ${isActive
+                  ? 'bg-blue-700/50 text-white shadow-lg transform scale-105'
+                  : 'text-blue-100 hover:bg-blue-700/30 hover:text-white hover:translate-x-1'
+                }`
+              }
+            >
+              <item.icon
+                className={({ isActive }) => `w-5 h-5 mr-3 transition-colors duration-150
         ${isActive ? 'text-blue-300' : 'text-blue-400'}`
-      } 
-    />
-    <span className="font-medium">{item.name}</span>
-  </NavLink>
-))}
+                }
+              />
+              <span className="font-medium">{item.name}</span>
+            </NavLink>
+          ))}
         </div>
       </nav>
 

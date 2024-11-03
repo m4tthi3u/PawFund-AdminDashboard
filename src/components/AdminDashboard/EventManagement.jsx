@@ -21,7 +21,7 @@ const EventManagement = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newEvent, setNewEvent] = useState({
     title: "",
-    description: "", 
+    description: "",
     date: "",
     location: "",
     shelterId: 0
@@ -101,7 +101,7 @@ const EventManagement = () => {
     for (let i = 1; i <= totalPages; i++) {
       pageNumbers.push(i);
     }
-  
+
     return (
       <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
         <div className="flex-1 flex items-center justify-between">
@@ -140,7 +140,7 @@ const EventManagement = () => {
                 key={number}
                 onClick={() => setCurrentPage(number)}
                 className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md
-                  ${currentPage === number 
+                  ${currentPage === number
                     ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
                     : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50'
                   }`}
@@ -172,7 +172,7 @@ const EventManagement = () => {
 
   const renderAddModal = () => {
     if (!isAddModalOpen) return null;
-  
+
     return (
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
         <div className="bg-white p-6 rounded-lg shadow-xl w-96">
@@ -183,7 +183,7 @@ const EventManagement = () => {
               <input
                 type="text"
                 value={newEvent.title}
-                onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+                onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
@@ -192,7 +192,7 @@ const EventManagement = () => {
               <label className="block text-sm font-medium text-gray-700">Description</label>
               <textarea
                 value={newEvent.description}
-                onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
+                onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
@@ -202,7 +202,7 @@ const EventManagement = () => {
               <input
                 type="datetime-local"
                 value={newEvent.date}
-                onChange={(e) => setNewEvent({...newEvent, date: e.target.value})}
+                onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
@@ -212,7 +212,7 @@ const EventManagement = () => {
               <input
                 type="text"
                 value={newEvent.location}
-                onChange={(e) => setNewEvent({...newEvent, location: e.target.value})}
+                onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
@@ -222,7 +222,7 @@ const EventManagement = () => {
               <input
                 type="text"
                 value={newEvent.shelterId}
-                onChange={(e) => setNewEvent({...newEvent, shelterId: e.target.value})}
+                onChange={(e) => setNewEvent({ ...newEvent, shelterId: e.target.value })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
@@ -261,7 +261,7 @@ const EventManagement = () => {
               <input
                 type="text"
                 value={editingEvent.title}
-                onChange={(e) => setEditingEvent({...editingEvent, title: e.target.value})}
+                onChange={(e) => setEditingEvent({ ...editingEvent, title: e.target.value })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
@@ -269,7 +269,7 @@ const EventManagement = () => {
               <label className="block text-sm font-medium text-gray-700">Description</label>
               <textarea
                 value={editingEvent.description}
-                onChange={(e) => setEditingEvent({...editingEvent, description: e.target.value})}
+                onChange={(e) => setEditingEvent({ ...editingEvent, description: e.target.value })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
@@ -278,7 +278,7 @@ const EventManagement = () => {
               <input
                 type="datetime-local"
                 value={editingEvent.date}
-                onChange={(e) => setEditingEvent({...editingEvent, date: e.target.value})}
+                onChange={(e) => setEditingEvent({ ...editingEvent, date: e.target.value })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
@@ -287,7 +287,7 @@ const EventManagement = () => {
               <input
                 type="text"
                 value={editingEvent.location}
-                onChange={(e) => setEditingEvent({...editingEvent, location: e.target.value})}
+                onChange={(e) => setEditingEvent({ ...editingEvent, location: e.target.value })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>

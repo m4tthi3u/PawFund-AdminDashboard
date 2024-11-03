@@ -19,7 +19,7 @@ const AdminDashboard = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      
+
       <div className="flex-1 overflow-auto">
         <header className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
@@ -31,7 +31,7 @@ const AdminDashboard = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            
+
             <div className="flex items-center space-x-4">
               <span className="text-gray-700">Welcome, {user.username}</span>
               <button
