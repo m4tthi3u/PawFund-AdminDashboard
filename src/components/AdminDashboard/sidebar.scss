@@ -1,40 +1,64 @@
+// Enhanced Sidebar Styles
 .sidebar {
-  background-color: #f8f9fa;
-  width: 250px;
-  min-height: 100vh;
-  padding: 20px;
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom,
+        rgba(30, 58, 138, 0.1),
+        rgba(30, 58, 138, 0.05));
+    z-index: -1;
+  }
+
+  .nav-link {
+    position: relative;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateX(4px);
+    }
+
+    &.active {
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 60%;
+        background: #60A5FA;
+        border-radius: 0 4px 4px 0;
+      }
+    }
+  }
 }
 
-.sidebar-button {
-  @apply w-full text-left px-4 py-2 my-2 bg-white rounded-lg shadow hover:bg-gray-100 transition-colors duration-200;
-  font-size: 16px;
-  color: #343a40;
+// Glassmorphism effect for cards and containers
+.glass-effect {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
-.sidebar-button:hover {
-  background-color: #e9ecef;
+// Custom scrollbar
+.sidebar::-webkit-scrollbar {
+  width: 6px;
 }
 
-.sidebar-button.active {
-  background-color: #dee2e6;
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.sidebar .logo {
-  text-align: center;
-  margin-bottom: 30px;
-}
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 3px;
 
-.sidebar .logo img {
-  max-width: 100%;
-  height: auto;
-}
-
-.sidebar .menu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar .menu-item {
-  margin-bottom: 15px;
+  &:hover {
+    background: rgba(156, 163, 175, 0.5);
+  }
 }
