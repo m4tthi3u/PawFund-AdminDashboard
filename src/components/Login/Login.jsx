@@ -1,35 +1,59 @@
 import React, { useState } from 'react';
-import { FaPaw, FaUser, FaLock } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
-import { api } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaPaw, FaUser, FaLock } from 'react-icons/fa';
+import { api } from '../../services/api';
 
-const Login = ({ handleLogin }) => {
+const Login = () => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
+
     try {
-      const response = await api.post('/api/Auth/login', credentials);
-      localStorage.setItem('token', response.data.token);
+      // First authenticate user
+      const authResponse = await api.post('/api/Auth/login', credentials);
+      const token = authResponse.data.token;
+
+      // Store the token
+      localStorage.setItem('token', token);
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      // Get user details to check role
+      const usersResponse = await api.get('/api/User/GetUsers');
+      const currentUser = usersResponse.data.find(
+        user => user.username.toLowerCase() === credentials.username.toLowerCase()
+      );
+
+      if (!currentUser || currentUser.role !== 'Admin') {
+        setError('Unauthorized access. Only administrators are allowed.');
+        localStorage.removeItem('token');
+        delete api.defaults.headers.common['Authorization'];
+        setIsLoading(false);
+        return;
+      }
+
+      // Store user info
+      localStorage.setItem('user', JSON.stringify(currentUser));
+
+      setIsLoading(false);
       navigate('/admin');
     } catch (err) {
-      setError('Invalid credentials');
-    } finally {
+      setError('Invalid username or password');
       setIsLoading(false);
     }
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
       className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900"
     >
+      {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0">
           <motion.div
@@ -86,16 +110,8 @@ const Login = ({ handleLogin }) => {
               transition={{ delay: 0.2 }}
               className="text-3xl font-bold text-white mb-2"
             >
-              Welcome Back
+              Admin Login
             </motion.h2>
-            <motion.p
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-blue-100"
-            >
-              Sign in to your admin account
-            </motion.p>
           </div>
 
           {/* Form Section */}
@@ -119,41 +135,34 @@ const Login = ({ handleLogin }) => {
             <motion.form
               onSubmit={handleSubmit}
               className="space-y-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
             >
-              <motion.div
-                className="relative"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              {/* Username field */}
+              <motion.div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                   <FaUser className="h-5 w-5 text-blue-300" />
                 </div>
                 <input
                   type="text"
-                  className="block w-full pl-10 pr-3 py-4 bg-white/10 border border-blue-300/30 text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                  className="block w-full pl-10 pr-3 py-4 bg-white/10 border border-blue-300/30 text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Username"
                   value={credentials.username}
                   onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+                  required
                 />
               </motion.div>
 
-              <motion.div
-                className="relative"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              {/* Password field */}
+              <motion.div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                   <FaLock className="h-5 w-5 text-blue-300" />
                 </div>
                 <input
                   type="password"
-                  className="block w-full pl-10 pr-3 py-4 bg-white/10 border border-blue-300/30 text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                  className="block w-full pl-10 pr-3 py-4 bg-white/10 border border-blue-300/30 text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Password"
                   value={credentials.password}
                   onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                  required
                 />
               </motion.div>
 
