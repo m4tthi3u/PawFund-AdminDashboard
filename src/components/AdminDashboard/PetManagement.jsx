@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { Menu, Transition } from '@headlessui/react';
+import { ChevronDownIcon } from '@heroicons/react/solid';
+import { Fragment } from 'react';
 import { api } from '../../services/api';
 import './admin-dashboard.scss';
 
@@ -13,6 +16,25 @@ const PetManagement = () => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedPet, setSelectedPet] = useState(null);
   const [userPets, setUserPets] = useState([]);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const PET_STATUSES = {
+    APPROVED: {
+      label: 'Approved',
+      color: 'bg-blue-100 text-blue-800'
+    },
+    AVAILABLE: {
+      label: 'Available',
+      color: 'bg-green-100 text-green-800'
+    },
+    PENDING: {
+      label: 'Pending',
+      color: 'bg-yellow-100 text-yellow-800'
+    },
+    ADOPTED: {
+      label: 'Adopted',
+      color: 'bg-purple-100 text-purple-800'
+    }
+  };
   const [editingPet, setEditingPet] = useState({
     name: "",
     species: "",
@@ -123,10 +145,15 @@ const PetManagement = () => {
 
   const handleStatusUpdate = async (petId, newStatus) => {
     try {
-      await api.post(`/api/Pets/AdoptPet/${petId}`, { status: newStatus });
-      fetchPets(); // Refresh the pet list
+      await api.post(`/api/Pets/MarkPetAs/${petId}`, JSON.stringify(newStatus), {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      fetchPets();
     } catch (err) {
       setError('Failed to update pet status');
+      console.error('Status update error:', err);
     }
   };
 
@@ -143,75 +170,45 @@ const PetManagement = () => {
   };
 
   const renderPagination = () => {
-    const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pageNumbers.push(i);
-    }
-
     return (
-      <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-        <div className="flex-1 flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-700">
-              Showing{' '}
-              <span className="font-medium">{indexOfFirstPet + 1}</span>{' '}
-              to{' '}
-              <span className="font-medium">
-                {Math.min(indexOfLastPet, filteredPets.length)}
-              </span>{' '}
-              of{' '}
-              <span className="font-medium">{filteredPets.length}</span>{' '}
-              results
-            </p>
-          </div>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setCurrentPage(1)}
-              disabled={currentPage === 1}
-              className="relative inline-flex items-center px-2 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-              <span className="sr-only">First</span>
-              ⟪
-            </button>
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="relative inline-flex items-center px-2 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-              <span className="sr-only">Previous</span>
-              ⟨
-            </button>
-            {pageNumbers.map(number => (
-              <button
-                key={number}
-                onClick={() => setCurrentPage(number)}
-                className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md
-                  ${currentPage === number
-                    ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                    : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50'
-                  }`}
-              >
-                {number}
-              </button>
-            ))}
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="relative inline-flex items-center px-2 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-              <span className="sr-only">Next</span>
-              ⟩
-            </button>
-            <button
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
-              className="relative inline-flex items-center px-2 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-              <span className="sr-only">Last</span>
-              ⟫
-            </button>
-          </div>
-        </div>
+      <div className="flex justify-center mt-4 space-x-2">
+        <button
+          onClick={() => paginate(1)}
+          disabled={currentPage === 1}
+          className="px-3 py-1 rounded-md bg-gray-200 disabled:opacity-50"
+        >
+          First
+        </button>
+        <button
+          onClick={() => paginate(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-3 py-1 rounded-md bg-gray-200 disabled:opacity-50"
+        >
+          Previous
+        </button>
+        {[...Array(totalPages)].map((_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => paginate(index + 1)}
+            className={`px-3 py-1 rounded-md ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            {index + 1}
+          </button>
+        ))}
+        <button
+          onClick={() => paginate(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-3 py-1 rounded-md bg-gray-200 disabled:opacity-50"
+        >
+          Next
+        </button>
+        <button
+          onClick={() => paginate(totalPages)}
+          disabled={currentPage === totalPages}
+          className="px-3 py-1 rounded-md bg-gray-200 disabled:opacity-50"
+        >
+          Last
+        </button>
       </div>
     );
   };
@@ -438,11 +435,66 @@ const PetManagement = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">{pet.name}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    {pet.status}
-                  </span>
+                  <div className="flex items-center space-x-2">
+                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${PET_STATUSES[pet.status.toUpperCase()]?.color
+                      }`}>
+                      {pet.status}
+                    </span>
+                    <Menu as="div" className="relative">
+                      <div>
+                        <Menu.Button className="inline-flex justify-center items-center px-2 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none">
+                          Change
+                          <ChevronDownIcon className="w-5 h-5 ml-1" aria-hidden="true" />
+                        </Menu.Button>
+                      </div>
+
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <Menu.Items
+                          className={`fixed transform z-50 w-40 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
+                          style={{
+                            top: 'auto',
+                            left: (event) => {
+                              const rect = event.target.getBoundingClientRect();
+                              return `${rect.left}px`;
+                            },
+                            bottom: (event) => {
+                              const rect = event.target.getBoundingClientRect();
+                              const windowHeight = window.innerHeight;
+                              return rect.bottom + 180 > windowHeight
+                                ? `${windowHeight - rect.bottom + 40}px`
+                                : 'auto';
+                            }
+                          }}
+                        >
+                          <div className="py-1">
+                            {Object.values(PET_STATUSES).map(({ label }) => (
+                              <Menu.Item key={label}>
+                                {({ active }) => (
+                                  <button
+                                    onClick={() => handleStatusUpdate(pet.id, label)}
+                                    className={`${active ? 'bg-gray-100' : ''
+                                      } block w-full text-left px-4 py-2 text-sm text-gray-700`}
+                                  >
+                                    Mark as {label}
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            ))}
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </Menu>
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4 whitespace-nowrap space-x-2">
                   <button
                     onClick={() => handleDetailsClick(pet)}
                     className="text-purple-600 hover:text-purple-900 px-3 py-1 rounded-md text-sm font-medium"
@@ -461,30 +513,14 @@ const PetManagement = () => {
                   >
                     Update
                   </button>
-                  {pet.status === 'Available' && (
-                    <>
-                      <button
-                        onClick={() => handleStatusUpdate(pet.id, 'Pending')}
-                        className="text-yellow-600 hover:text-yellow-900 px-3 py-1 rounded-md text-sm font-medium"
-                      >
-                        Mark as Pending
-                      </button>
-                      <button
-                        onClick={() => handleStatusUpdate(pet.id, 'Adopted')}
-                        className="text-green-600 hover:text-green-900 px-3 py-1 rounded-md text-sm font-medium"
-                      >
-                        Mark as Adopted
-                      </button>
-                    </>
-                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      {renderEditModal()}
       {renderPagination()}
+      {renderEditModal()}
       {renderAddModal()}
       {renderDetailsModal()}
     </div>
