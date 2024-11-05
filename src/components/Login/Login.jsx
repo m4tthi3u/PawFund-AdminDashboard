@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { FaPaw, FaUser, FaLock } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../../services/api';
-import { FaUser, FaLock, FaPaw } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({ handleLogin }) => {
   const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({
-    username: '',
-    password: ''
-  });
-  const [error, setError] = useState('');
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,91 +25,175 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-700">
-      <div className="absolute inset-0 bg-pattern opacity-10"></div>
-      
-      <div className="relative max-w-md w-full mx-4">
-        {/* Card Container */}
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900"
+    >
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0">
+          <motion.div
+            animate={{
+              backgroundPosition: ['0% 0%', '100% 100%'],
+              opacity: [0.3, 0.5],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              repeatType: "reverse",
+            }}
+            className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(255,255,255,0.1),transparent)] opacity-30"
+          />
+        </div>
+      </div>
+
+      <motion.div
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        transition={{ type: "spring", duration: 0.8 }}
+        className="relative max-w-md w-full mx-4"
+      >
+        <motion.div
+          className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden"
+          whileHover={{ boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}
+          transition={{ duration: 0.3 }}
+        >
           {/* Header */}
-          <div className="px-8 pt-8 pb-6 text-center bg-gradient-to-b from-blue-50 to-white">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-600 text-white mb-4">
-              <FaPaw className="w-8 h-8" />
-            </div>
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h2>
-            <p className="text-gray-500">Sign in to your admin account</p>
+          <div className="px-8 pt-8 pb-6 text-center">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1, rotate: 360 }}
+              transition={{ type: "spring", duration: 1.5, bounce: 0.5 }}
+              className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white mb-6"
+            >
+              <motion.div
+                animate={{
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 10, -10, 0]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatType: "reverse"
+                }}
+              >
+                <FaPaw className="w-10 h-10" />
+              </motion.div>
+            </motion.div>
+            <motion.h2
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-3xl font-bold text-white mb-2"
+            >
+              Welcome Back
+            </motion.h2>
+            <motion.p
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-blue-100"
+            >
+              Sign in to your admin account
+            </motion.p>
           </div>
 
           {/* Form Section */}
           <div className="p-8">
-            {error && (
-              <div className="mb-6 p-4 rounded-lg bg-red-50 border-l-4 border-red-500">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="mb-6 p-4 rounded-lg bg-red-500/10 backdrop-blur-sm border-l-4 border-red-500"
+                >
+                  <div className="flex items-center text-red-200">
+                    <FaLock className="w-5 h-5 mr-3" />
+                    <p className="text-sm">{error}</p>
                   </div>
-                  <div className="ml-3">
-                    <p className="text-sm text-red-700">{error}</p>
-                  </div>
-                </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="relative">
+            <motion.form
+              onSubmit={handleSubmit}
+              className="space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <motion.div
+                className="relative"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.2 }}
+              >
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaUser className="h-5 w-5 text-gray-400" />
+                  <FaUser className="h-5 w-5 text-blue-300" />
                 </div>
                 <input
                   type="text"
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out"
+                  className="block w-full pl-10 pr-3 py-4 bg-white/10 border border-blue-300/30 text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                   placeholder="Username"
                   value={credentials.username}
-                  onChange={(e) => setCredentials({...credentials, username: e.target.value})}
+                  onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
                 />
-              </div>
+              </motion.div>
 
-              <div className="relative">
+              <motion.div
+                className="relative"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.2 }}
+              >
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="h-5 w-5 text-gray-400" />
+                  <FaLock className="h-5 w-5 text-blue-300" />
                 </div>
                 <input
                   type="password"
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out"
+                  className="block w-full pl-10 pr-3 py-4 bg-white/10 border border-blue-300/30 text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                   placeholder="Password"
                   value={credentials.password}
-                  onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+                  onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
                 />
-              </div>
+              </motion.div>
 
-              <button
+              <motion.button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex items-center justify-center py-3 px-4 rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-all duration-200 hover:scale-[1.02]"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full flex items-center justify-center py-4 px-4 rounded-xl text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-all duration-200"
               >
                 {isLoading ? (
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  >
+                    <svg className="h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  </motion.div>
                 ) : (
                   "Sign In"
                 )}
-              </button>
-            </form>
+              </motion.button>
+            </motion.form>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Footer */}
-        <div className="text-center mt-6">
-          <p className="text-sm text-white/80">
-            Copyright &copy; 2024 PawFund
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="text-center mt-6"
+        >
+          <p className="text-sm text-blue-200">
+            Copyright &copy; {new Date().getFullYear()} PawFund
           </p>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 
