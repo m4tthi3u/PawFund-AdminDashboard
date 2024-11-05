@@ -1,14 +1,24 @@
 import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaUserCircle } from 'react-icons/fa';
 import Sidebar from './Sidebar';
 import UserManagement from './UserManagement';
 import PetManagement from './PetManagement';
 import EventManagement from './EventManagement';
-import './admin-dashboard.scss';
+import DonationManagement from './DonationManagement';
+import StatisticsManagement from './StatisticsManagement';
+import ShelterManagement from './ShelterManagement';
 
-const AdminDashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+const AdminDashboard = ({ user }) => {
+  const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
+
+  // Animation variants
+  const pageTransition = {
+    initial: { opacity: 0, x: -10 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: 10 }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -17,40 +27,63 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+    <div className="min-h-screen bg-gray-50 flex">
+      <Sidebar isMinimized={isSidebarMinimized} setIsMinimized={setIsSidebarMinimized} />
+      <div className={`flex-1 transition-all duration-300 ease-in-out ${isSidebarMinimized ? 'ml-20' : 'ml-64'}`}>
+        {/* Header */}
+        <header className="bg-white shadow-sm sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+            <div className="flex justify-end items-center">
+              {/* User Profile */}
+              <div className="flex items-center gap-6">
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm font-medium text-gray-700">
+                    Welcome, {user?.username || 'User'}
+                  </span>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="rounded-full bg-gray-100 p-1"
+                  >
+                    <FaUserCircle className="h-6 w-6 text-gray-600" />
+                  </motion.button>
+                </div>
 
-      <div className="flex-1 overflow-auto">
-        <header className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-            <button
-              className="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">Welcome, {user.username}</span>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 text-sm text-red-600 hover:text-red-900"
-              >
-                Logout
-              </button>
+                {/* Logout Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleLogout}
+                  className="px-3 py-1.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Logout
+                </motion.button>
+              </div>
             </div>
           </div>
         </header>
 
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <Routes>
-            <Route path="users" element={<UserManagement />} />
-            <Route path="/" element={<Navigate to="users" replace />} />
-            <Route path="pets" element={<PetManagement />} />
-            <Route path="events" element={<EventManagement />} />
-          </Routes>
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          <AnimatePresence mode='wait'>
+            <motion.div
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={pageTransition}
+              transition={{ duration: 0.2 }}
+            >
+              <Routes>
+                <Route path="/" element={<Navigate to="users" replace />} />
+                <Route path="users" element={<UserManagement />} />
+                <Route path="pets" element={<PetManagement />} />
+                <Route path="events" element={<EventManagement />} />
+                <Route path="donations" element={<DonationManagement />} />
+                <Route path="statistics" element={<StatisticsManagement />} />
+                <Route path="shelters" element={<ShelterManagement />} />
+              </Routes>
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     </div>
