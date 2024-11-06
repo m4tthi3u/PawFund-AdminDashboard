@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { api } from '../../services/api';
-import './admin-dashboard.scss';
+import React, { useState, useEffect } from "react";
+import { api } from "../../services/api";
+import "./admin-dashboard.scss";
 
 const EventManagement = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [eventsPerPage] = useState(10);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -16,7 +16,7 @@ const EventManagement = () => {
     description: "",
     date: "",
     location: "",
-    shelterId: 0
+    shelterId: 0,
   });
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -25,7 +25,7 @@ const EventManagement = () => {
     description: "",
     date: "",
     location: "",
-    shelterId: 0
+    shelterId: 0,
   });
 
   useEffect(() => {
@@ -34,31 +34,34 @@ const EventManagement = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await api.get('/api/Event/GetEvents');
+      const response = await api.get("/api/Event/GetEvents");
       setEvents(response.data);
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch events');
+      setError("Failed to fetch events");
       setLoading(false);
     }
   };
 
-  const filteredEvents = events.filter(event =>
-    event.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredEvents = events.filter((event) =>
+    event.title.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const indexOfLastEvent = currentPage * eventsPerPage;
   const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
-  const currentEvents = filteredEvents.slice(indexOfFirstEvent, indexOfLastEvent);
+  const currentEvents = filteredEvents.slice(
+    indexOfFirstEvent,
+    indexOfLastEvent,
+  );
   const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
 
   const handleDeleteEvent = async (eventId) => {
-    if (window.confirm('Are you sure you want to delete this event?')) {
+    if (window.confirm("Are you sure you want to delete this event?")) {
       try {
         await api.delete(`/api/Event/DeleteEvent/${eventId}`);
-        setEvents(events.filter(event => event.id !== eventId));
+        setEvents(events.filter((event) => event.id !== eventId));
       } catch (err) {
-        setError('Failed to delete event');
+        setError("Failed to delete event");
       }
     }
   };
@@ -71,18 +74,18 @@ const EventManagement = () => {
   const handleAddEvent = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/api/Event/CreateEvent', newEvent);
+      await api.post("/api/Event/CreateEvent", newEvent);
       setIsAddModalOpen(false);
       setNewEvent({
         title: "",
         description: "",
         date: "",
         location: "",
-        shelterId: 0
+        shelterId: 0,
       });
       fetchEvents();
     } catch (err) {
-      setError('Failed to add event');
+      setError("Failed to add event");
     }
   };
 
@@ -93,7 +96,7 @@ const EventManagement = () => {
       setIsEditModalOpen(false);
       fetchEvents();
     } catch (err) {
-      setError('Failed to update event');
+      setError("Failed to update event");
     }
   };
 
@@ -118,7 +121,7 @@ const EventManagement = () => {
           <button
             key={index + 1}
             onClick={() => paginate(index + 1)}
-            className={`px-3 py-1 rounded-md ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            className={`px-3 py-1 rounded-md ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"}`}
           >
             {index + 1}
           </button>
@@ -150,50 +153,70 @@ const EventManagement = () => {
           <h2 className="text-xl font-bold mb-4">Add New Event</h2>
           <form onSubmit={handleAddEvent}>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Title</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Title
+              </label>
               <input
                 type="text"
                 value={newEvent.title}
-                onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, title: e.target.value })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Description</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Description
+              </label>
               <textarea
                 value={newEvent.description}
-                onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, description: e.target.value })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Date</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Date
+              </label>
               <input
                 type="datetime-local"
                 value={newEvent.date}
-                onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, date: e.target.value })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Location</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Location
+              </label>
               <input
                 type="text"
                 value={newEvent.location}
-                onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, location: e.target.value })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">ShelterID</label>
+              <label className="block text-sm font-medium text-gray-700">
+                ShelterID
+              </label>
               <input
                 type="text"
                 value={newEvent.shelterId}
-                onChange={(e) => setNewEvent({ ...newEvent, shelterId: e.target.value })}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, shelterId: e.target.value })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
@@ -228,37 +251,56 @@ const EventManagement = () => {
           <h2 className="text-xl font-bold mb-4">Edit Event</h2>
           <form onSubmit={handleUpdateSubmit}>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Title</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Title
+              </label>
               <input
                 type="text"
                 value={editingEvent.title}
-                onChange={(e) => setEditingEvent({ ...editingEvent, title: e.target.value })}
+                onChange={(e) =>
+                  setEditingEvent({ ...editingEvent, title: e.target.value })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Description</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Description
+              </label>
               <textarea
                 value={editingEvent.description}
-                onChange={(e) => setEditingEvent({ ...editingEvent, description: e.target.value })}
+                onChange={(e) =>
+                  setEditingEvent({
+                    ...editingEvent,
+                    description: e.target.value,
+                  })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Date</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Date
+              </label>
               <input
                 type="datetime-local"
                 value={editingEvent.date}
-                onChange={(e) => setEditingEvent({ ...editingEvent, date: e.target.value })}
+                onChange={(e) =>
+                  setEditingEvent({ ...editingEvent, date: e.target.value })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Location</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Location
+              </label>
               <input
                 type="text"
                 value={editingEvent.location}
-                onChange={(e) => setEditingEvent({ ...editingEvent, location: e.target.value })}
+                onChange={(e) =>
+                  setEditingEvent({ ...editingEvent, location: e.target.value })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
@@ -283,11 +325,12 @@ const EventManagement = () => {
     );
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center h-64">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
 
   return (
     <div className="p-6">
@@ -314,11 +357,21 @@ const EventManagement = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Title
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Description
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Date
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Location
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -326,8 +379,12 @@ const EventManagement = () => {
               <tr key={event.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">{event.title}</td>
                 <td className="px-6 py-4">{event.description}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{new Date(event.date).toISOString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{event.location}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {new Date(event.date).toISOString()}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {event.location}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <button
                     onClick={() => handleDeleteEvent(event.id)}

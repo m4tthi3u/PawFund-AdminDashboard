@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { api } from '../../services/api';
-import './admin-dashboard.scss';
+import React, { useState, useEffect } from "react";
+import { api } from "../../services/api";
+import "./admin-dashboard.scss";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -14,26 +14,26 @@ const UserManagement = () => {
   const [editingUser, setEditingUser] = useState({
     username: "",
     email: "",
-    role: "Guest"
+    role: "Guest",
   });
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newUser, setNewUser] = useState({
     username: "",
     email: "",
-    password: ""
+    password: "",
   });
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  });
 
   const fetchUsers = async () => {
     try {
-      const response = await api.get('/api/User/GetUsers');
+      const response = await api.get("/api/User/GetUsers");
       setUsers(response.data);
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch users');
+      setError("Failed to fetch users");
       setLoading(false);
     }
   };
@@ -45,16 +45,16 @@ const UserManagement = () => {
   const handleAddUser = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/api/User/CreateUser', newUser);
+      await api.post("/api/User/CreateUser", newUser);
       setIsAddModalOpen(false);
       setNewUser({
         username: "",
         email: "",
-        password: ""
+        password: "",
       });
       fetchUsers();
     } catch (err) {
-      setError('Failed to add user');
+      setError("Failed to add user");
     }
   };
 
@@ -65,7 +65,7 @@ const UserManagement = () => {
       setIsEditModalOpen(false);
       fetchUsers(); // Refresh the user list
     } catch (err) {
-      setError('Failed to update user');
+      setError("Failed to update user");
     }
   };
 
@@ -90,7 +90,7 @@ const UserManagement = () => {
           <button
             key={index + 1}
             onClick={() => paginate(index + 1)}
-            className={`px-3 py-1 rounded-md ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            className={`px-3 py-1 rounded-md ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"}`}
           >
             {index + 1}
           </button>
@@ -122,40 +122,52 @@ const UserManagement = () => {
           <h2 className="text-xl font-bold mb-4">Add New User</h2>
           <form onSubmit={handleAddUser}>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Username</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Username
+              </label>
               <input
                 type="text"
                 value={newUser.username}
-                onChange={(e) => setNewUser({
-                  ...newUser,
-                  username: e.target.value
-                })}
+                onChange={(e) =>
+                  setNewUser({
+                    ...newUser,
+                    username: e.target.value,
+                  })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Email
+              </label>
               <input
                 type="email"
                 value={newUser.email}
-                onChange={(e) => setNewUser({
-                  ...newUser,
-                  email: e.target.value
-                })}
+                onChange={(e) =>
+                  setNewUser({
+                    ...newUser,
+                    email: e.target.value,
+                  })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Password</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
               <input
                 type="password"
                 value={newUser.password}
-                onChange={(e) => setNewUser({
-                  ...newUser,
-                  password: e.target.value
-                })}
+                onChange={(e) =>
+                  setNewUser({
+                    ...newUser,
+                    password: e.target.value,
+                  })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
@@ -190,37 +202,49 @@ const UserManagement = () => {
           <h2 className="text-xl font-bold mb-4">Edit User</h2>
           <form onSubmit={handleUpdateSubmit}>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Username</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Username
+              </label>
               <input
                 type="text"
                 value={editingUser.username}
-                onChange={(e) => setEditingUser({
-                  ...editingUser,
-                  username: e.target.value
-                })}
+                onChange={(e) =>
+                  setEditingUser({
+                    ...editingUser,
+                    username: e.target.value,
+                  })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Email
+              </label>
               <input
                 type="email"
                 value={editingUser.email}
-                onChange={(e) => setEditingUser({
-                  ...editingUser,
-                  email: e.target.value
-                })}
+                onChange={(e) =>
+                  setEditingUser({
+                    ...editingUser,
+                    email: e.target.value,
+                  })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Role</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Role
+              </label>
               <select
                 value={editingUser.role}
-                onChange={(e) => setEditingUser({
-                  ...editingUser,
-                  role: e.target.value
-                })}
+                onChange={(e) =>
+                  setEditingUser({
+                    ...editingUser,
+                    role: e.target.value,
+                  })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
                 <option value="Guest">Guest</option>
@@ -250,12 +274,10 @@ const UserManagement = () => {
     );
   };
 
-
-
-
-  const filteredUsers = users.filter(user =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter(
+    (user) =>
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Pagination
@@ -265,21 +287,22 @@ const UserManagement = () => {
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   const handleDeleteUser = async (userId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         await api.delete(`/api/User/DeleteUser/${userId}`);
-        setUsers(users.filter(user => user.id !== userId));
+        setUsers(users.filter((user) => user.id !== userId));
       } catch (err) {
-        setError('Failed to delete user');
+        setError("Failed to delete user");
       }
     }
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center h-64">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
 
   return (
     <div className="p-6">
@@ -306,10 +329,18 @@ const UserManagement = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Username
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Email
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Role
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -340,8 +371,6 @@ const UserManagement = () => {
             ))}
           </tbody>
         </table>
-
-
       </div>
       {renderEditModal()}
       {renderPagination()}

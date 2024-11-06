@@ -1,39 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { Menu, Transition } from '@headlessui/react';
-import { ChevronDownIcon } from '@heroicons/react/solid';
-import { Fragment } from 'react';
-import { api } from '../../services/api';
-import './admin-dashboard.scss';
+import React, { useEffect, useState } from "react";
+import { Menu, Transition } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/solid";
+import { Fragment } from "react";
+import { api } from "../../services/api";
+import "./admin-dashboard.scss";
 
 const PetManagement = () => {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [petsPerPage] = useState(10);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedPet, setSelectedPet] = useState(null);
-  const [userPets, setUserPets] = useState([]);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const PET_STATUSES = {
     APPROVED: {
-      label: 'Approved',
-      color: 'bg-blue-100 text-blue-800'
+      label: "Approved",
+      color: "bg-blue-100 text-blue-800",
     },
     AVAILABLE: {
-      label: 'Available',
-      color: 'bg-green-100 text-green-800'
+      label: "Available",
+      color: "bg-green-100 text-green-800",
     },
     PENDING: {
-      label: 'Pending',
-      color: 'bg-yellow-100 text-yellow-800'
+      label: "Pending",
+      color: "bg-yellow-100 text-yellow-800",
     },
     ADOPTED: {
-      label: 'Adopted',
-      color: 'bg-purple-100 text-purple-800'
-    }
+      label: "Adopted",
+      color: "bg-purple-100 text-purple-800",
+    },
   };
   const [editingPet, setEditingPet] = useState({
     name: "",
@@ -44,7 +43,7 @@ const PetManagement = () => {
     description: "",
     imageUrl: "",
     status: "Available",
-    shelterId: 0
+    shelterId: 0,
   });
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -56,36 +55,36 @@ const PetManagement = () => {
     gender: "",
     description: "",
     imageUrl: "",
-    shelterId: 0
+    shelterId: 0,
   });
 
   useEffect(() => {
     fetchPets();
-  }, []);
+  });
 
   const fetchPets = async () => {
     try {
-      const response = await api.get('/api/Pets/GetPets');
+      const response = await api.get("/api/Pets/GetPets");
       setPets(response.data);
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch pets');
+      setError("Failed to fetch pets");
       setLoading(false);
     }
   };
   const fetchUserPetDetails = async (petId) => {
     try {
-      const response = await api.get('/api/UserPet/mypets');
-      const userPetData = response.data.find(up => up.petId === petId);
+      const response = await api.get("/api/UserPet/mypets");
+      const userPetData = response.data.find((up) => up.petId === petId);
       return userPetData; // Now includes user object directly
     } catch (err) {
-      console.error('Failed to fetch user pet details:', err);
+      console.error("Failed to fetch user pet details:", err);
       return null;
     }
   };
 
-  const filteredPets = pets.filter(pet =>
-    pet.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPets = pets.filter((pet) =>
+    pet.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const indexOfLastPet = currentPage * petsPerPage;
@@ -94,12 +93,12 @@ const PetManagement = () => {
   const totalPages = Math.ceil(filteredPets.length / petsPerPage);
 
   const handleDeletePet = async (petId) => {
-    if (window.confirm('Are you sure you want to delete this pet?')) {
+    if (window.confirm("Are you sure you want to delete this pet?")) {
       try {
         await api.delete(`/api/Pets/DeletePet/${petId}`);
-        setPets(pets.filter(pet => pet.id !== petId));
+        setPets(pets.filter((pet) => pet.id !== petId));
       } catch (err) {
-        setError('Failed to delete pet');
+        setError("Failed to delete pet");
       }
     }
   };
@@ -112,20 +111,20 @@ const PetManagement = () => {
   const handleDetailsClick = async (pet) => {
     setSelectedPet(pet);
     const userPetDetails = await fetchUserPetDetails(pet.id);
-    setSelectedPet(prev => ({
+    setSelectedPet((prev) => ({
       ...prev,
-      userId: userPetDetails?.userId || 'No owner',
-      username: userPetDetails?.user?.username || 'Unknown',
-      email: userPetDetails?.user?.email || 'No email',
-      adoptionDate: userPetDetails?.adoptionDate || 'Not adopted',
-      adoptionStatus: userPetDetails?.status || 'No status'
+      userId: userPetDetails?.userId || "No owner",
+      username: userPetDetails?.user?.username || "Unknown",
+      email: userPetDetails?.user?.email || "No email",
+      adoptionDate: userPetDetails?.adoptionDate || "Not adopted",
+      adoptionStatus: userPetDetails?.status || "No status",
     }));
     setIsDetailsModalOpen(true);
   };
   const handleAddPet = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/api/Pets/AddPet', newPet);
+      await api.post("/api/Pets/AddPet", newPet);
       setIsAddModalOpen(false);
       setNewPet({
         name: "",
@@ -135,28 +134,31 @@ const PetManagement = () => {
         gender: "",
         description: "",
         imageUrl: "",
-        shelterId: 0
+        shelterId: 0,
       });
       fetchPets();
     } catch (err) {
-      setError('Failed to add pet');
+      setError("Failed to add pet");
     }
   };
 
   const handleStatusUpdate = async (petId, newStatus) => {
     try {
-      await api.post(`/api/Pets/MarkPetAs/${petId}`, JSON.stringify(newStatus), {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      await api.post(
+        `/api/Pets/MarkPetAs/${petId}`,
+        JSON.stringify(newStatus),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
       fetchPets();
     } catch (err) {
-      setError('Failed to update pet status');
-      console.error('Status update error:', err);
+      setError("Failed to update pet status");
+      console.error("Status update error:", err);
     }
   };
-
 
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
@@ -165,7 +167,7 @@ const PetManagement = () => {
       setIsEditModalOpen(false);
       fetchPets(); // Refresh the pet list
     } catch (err) {
-      setError('Failed to update pet');
+      setError("Failed to update pet");
     }
   };
 
@@ -190,7 +192,7 @@ const PetManagement = () => {
           <button
             key={index + 1}
             onClick={() => paginate(index + 1)}
-            className={`px-3 py-1 rounded-md ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            className={`px-3 py-1 rounded-md ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"}`}
           >
             {index + 1}
           </button>
@@ -225,8 +227,7 @@ const PetManagement = () => {
               onClick={() => setIsDetailsModalOpen(false)}
               className="text-gray-400 hover:text-gray-500"
             >
-              <span className="sr-only">Close</span>
-              ×
+              <span className="sr-only">Close</span>×
             </button>
           </div>
 
@@ -237,7 +238,7 @@ const PetManagement = () => {
                 alt={selectedPet.name}
                 className="w-full h-[400px] object-cover rounded-lg shadow-md"
                 onError={(e) => {
-                  e.target.src = 'https://via.placeholder.com/400';
+                  e.target.src = "https://via.placeholder.com/400";
                   e.target.onerror = null;
                 }}
               />
@@ -262,7 +263,9 @@ const PetManagement = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Adoption Date:</span>
-                    <span>{new Date(selectedPet.adoptionDate).toLocaleDateString()}</span>
+                    <span>
+                      {new Date(selectedPet.adoptionDate).toLocaleDateString()}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Adoption Status:</span>
@@ -271,18 +274,24 @@ const PetManagement = () => {
                 </div>
               </div>
               {/* Existing pet details */}
-              {Object.entries(selectedPet).map(([key, value]) => (
-                !['userId', 'adoptionDate', 'adoptionStatus'].includes(key) && (
-                  <div key={key} className="col-span-2 flex items-center border-b border-gray-200 py-2">
-                    <span className="font-medium text-gray-600 w-1/3 capitalize">
-                      {key}:
-                    </span>
-                    <span className="text-gray-800 w-2/3">
-                      {typeof value === 'boolean' ? value.toString() : value}
-                    </span>
-                  </div>
-                )
-              ))}
+              {Object.entries(selectedPet).map(
+                ([key, value]) =>
+                  !["userId", "adoptionDate", "adoptionStatus"].includes(
+                    key,
+                  ) && (
+                    <div
+                      key={key}
+                      className="col-span-2 flex items-center border-b border-gray-200 py-2"
+                    >
+                      <span className="font-medium text-gray-600 w-1/3 capitalize">
+                        {key}:
+                      </span>
+                      <span className="text-gray-800 w-2/3">
+                        {typeof value === "boolean" ? value.toString() : value}
+                      </span>
+                    </div>
+                  ),
+              )}
             </div>
           </div>
           <div className="mt-6 flex justify-end">
@@ -306,16 +315,23 @@ const PetManagement = () => {
         <div className="bg-white p-6 rounded-lg shadow-xl w-96">
           <h2 className="text-xl font-bold mb-4">Add New Pet</h2>
           <form onSubmit={handleAddPet}>
-            {Object.keys(newPet).map(key => (
+            {Object.keys(newPet).map((key) => (
               <div key={key} className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">{key}</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  {key}
+                </label>
                 <input
-                  type={key === 'age' ? 'number' : 'text'}
+                  type={key === "age" ? "number" : "text"}
                   value={newPet[key]}
-                  onChange={(e) => setNewPet({
-                    ...newPet,
-                    [key]: key === 'age' ? parseInt(e.target.value) : e.target.value
-                  })}
+                  onChange={(e) =>
+                    setNewPet({
+                      ...newPet,
+                      [key]:
+                        key === "age"
+                          ? parseInt(e.target.value)
+                          : e.target.value,
+                    })
+                  }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
@@ -349,22 +365,30 @@ const PetManagement = () => {
         <div className="bg-white p-6 rounded-lg shadow-xl w-96">
           <h2 className="text-xl font-bold mb-4">Edit Pet</h2>
           <form onSubmit={handleUpdateSubmit}>
-            {Object.keys(editingPet).map(key => (
-              key !== 'id' && (
-                <div key={key} className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">{key}</label>
-                  <input
-                    type={key === 'age' ? 'number' : 'text'}
-                    value={editingPet[key]}
-                    onChange={(e) => setEditingPet({
-                      ...editingPet,
-                      [key]: key === 'age' ? parseInt(e.target.value) : e.target.value
-                    })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                </div>
-              )
-            ))}
+            {Object.keys(editingPet).map(
+              (key) =>
+                key !== "id" && (
+                  <div key={key} className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      {key}
+                    </label>
+                    <input
+                      type={key === "age" ? "number" : "text"}
+                      value={editingPet[key]}
+                      onChange={(e) =>
+                        setEditingPet({
+                          ...editingPet,
+                          [key]:
+                            key === "age"
+                              ? parseInt(e.target.value)
+                              : e.target.value,
+                        })
+                      }
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    />
+                  </div>
+                ),
+            )}
             <div className="mt-4 flex justify-end space-x-2">
               <button
                 type="button"
@@ -386,11 +410,12 @@ const PetManagement = () => {
     );
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center h-64">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
 
   return (
     <div className="p-6">
@@ -417,10 +442,18 @@ const PetManagement = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Image
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -436,15 +469,21 @@ const PetManagement = () => {
                 <td className="px-6 py-4 whitespace-nowrap">{pet.name}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center space-x-2">
-                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${PET_STATUSES[pet.status.toUpperCase()]?.color
-                      }`}>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                        PET_STATUSES[pet.status.toUpperCase()]?.color
+                      }`}
+                    >
                       {pet.status}
                     </span>
                     <Menu as="div" className="relative">
                       <div>
                         <Menu.Button className="inline-flex justify-center items-center px-2 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none">
                           Change
-                          <ChevronDownIcon className="w-5 h-5 ml-1" aria-hidden="true" />
+                          <ChevronDownIcon
+                            className="w-5 h-5 ml-1"
+                            aria-hidden="true"
+                          />
                         </Menu.Button>
                       </div>
 
@@ -460,7 +499,7 @@ const PetManagement = () => {
                         <Menu.Items
                           className={`fixed transform z-50 w-40 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
                           style={{
-                            top: 'auto',
+                            top: "auto",
                             left: (event) => {
                               const rect = event.target.getBoundingClientRect();
                               return `${rect.left}px`;
@@ -470,8 +509,8 @@ const PetManagement = () => {
                               const windowHeight = window.innerHeight;
                               return rect.bottom + 180 > windowHeight
                                 ? `${windowHeight - rect.bottom + 40}px`
-                                : 'auto';
-                            }
+                                : "auto";
+                            },
                           }}
                         >
                           <div className="py-1">
@@ -479,9 +518,12 @@ const PetManagement = () => {
                               <Menu.Item key={label}>
                                 {({ active }) => (
                                   <button
-                                    onClick={() => handleStatusUpdate(pet.id, label)}
-                                    className={`${active ? 'bg-gray-100' : ''
-                                      } block w-full text-left px-4 py-2 text-sm text-gray-700`}
+                                    onClick={() =>
+                                      handleStatusUpdate(pet.id, label)
+                                    }
+                                    className={`${
+                                      active ? "bg-gray-100" : ""
+                                    } block w-full text-left px-4 py-2 text-sm text-gray-700`}
                                   >
                                     Mark as {label}
                                   </button>
