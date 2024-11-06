@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaPaw, FaUser, FaLock } from 'react-icons/fa';
-import { api } from '../../services/api';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaPaw, FaUser, FaLock } from "react-icons/fa";
+import { api } from "../../services/api";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [credentials, setCredentials] = useState({
+    username: "",
+    password: "",
+  });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -16,49 +19,57 @@ const Login = () => {
     setError(null);
 
     try {
-      // First authenticate user
-      const authResponse = await api.post('/api/Auth/login', credentials);
+      const authResponse = await api.post("/api/Auth/login", credentials);
       const token = authResponse.data.token;
 
       // Store the token
-      localStorage.setItem('token', token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      localStorage.setItem("token", token);
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       // Get user details to check role
-      const usersResponse = await api.get('/api/User/GetUsers');
+      const usersResponse = await api.get("/api/User/GetUsers");
       const currentUser = usersResponse.data.find(
-        user => user.username.toLowerCase() === credentials.username.toLowerCase()
+        (user) =>
+          user.username.toLowerCase() === credentials.username.toLowerCase(),
       );
 
-      if (!currentUser || currentUser.role !== 'Admin') {
-        setError('Unauthorized access. Only administrators are allowed.');
-        localStorage.removeItem('token');
-        delete api.defaults.headers.common['Authorization'];
+      if (!currentUser) {
+        setError("User not found.");
+        localStorage.removeItem("token");
+        delete api.defaults.headers.common["Authorization"];
+        setIsLoading(false);
+        return;
+      }
+
+      if (currentUser.role !== "Admin") {
+        setError(
+          "You are not authorised to access the Admin Dashboard, please contact your Admin for more information",
+        );
+        localStorage.removeItem("token");
+        delete api.defaults.headers.common["Authorization"];
         setIsLoading(false);
         return;
       }
 
       // Store user info
-      localStorage.setItem('user', JSON.stringify(currentUser));
+      localStorage.setItem("user", JSON.stringify(currentUser));
 
       setIsLoading(false);
-      navigate('/admin');
+      navigate("/admin");
     } catch (err) {
-      setError('Invalid username or password');
+      setError("Invalid username or password");
       setIsLoading(false);
     }
   };
 
   return (
-    <motion.div
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900"
-    >
+    <motion.div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900">
       {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0">
           <motion.div
             animate={{
-              backgroundPosition: ['0% 0%', '100% 100%'],
+              backgroundPosition: ["0% 0%", "100% 100%"],
               opacity: [0.3, 0.5],
             }}
             transition={{
@@ -93,12 +104,12 @@ const Login = () => {
               <motion.div
                 animate={{
                   scale: [1, 1.2, 1],
-                  rotate: [0, 10, -10, 0]
+                  rotate: [0, 10, -10, 0],
                 }}
                 transition={{
                   duration: 2,
                   repeat: Infinity,
-                  repeatType: "reverse"
+                  repeatType: "reverse",
                 }}
               >
                 <FaPaw className="w-10 h-10" />
@@ -132,10 +143,7 @@ const Login = () => {
               )}
             </AnimatePresence>
 
-            <motion.form
-              onSubmit={handleSubmit}
-              className="space-y-6"
-            >
+            <motion.form onSubmit={handleSubmit} className="space-y-6">
               {/* Username field */}
               <motion.div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
@@ -146,7 +154,9 @@ const Login = () => {
                   className="block w-full pl-10 pr-3 py-4 bg-white/10 border border-blue-300/30 text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Username"
                   value={credentials.username}
-                  onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+                  onChange={(e) =>
+                    setCredentials({ ...credentials, username: e.target.value })
+                  }
                   required
                 />
               </motion.div>
@@ -161,7 +171,9 @@ const Login = () => {
                   className="block w-full pl-10 pr-3 py-4 bg-white/10 border border-blue-300/30 text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Password"
                   value={credentials.password}
-                  onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                  onChange={(e) =>
+                    setCredentials({ ...credentials, password: e.target.value })
+                  }
                   required
                 />
               </motion.div>
@@ -176,11 +188,27 @@ const Login = () => {
                 {isLoading ? (
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                   >
                     <svg className="h-5 w-5" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
                     </svg>
                   </motion.div>
                 ) : (
