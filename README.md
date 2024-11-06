@@ -64,7 +64,7 @@ yarn build
 
 ## 🛠️ Technology Stack
 
-- **Frontend Framework**: JavaScript
+- **Frontend Framework**: ReactJS
 - **Styling**: SCSS/CSS with modern design principles
 - **Markup**: Semantic HTML5
 - **Build Tools**: Webpack, Babel
