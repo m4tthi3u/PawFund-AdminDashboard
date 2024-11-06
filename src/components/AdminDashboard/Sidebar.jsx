@@ -18,8 +18,8 @@ const navItems = [
   { name: "Pets", path: "pets", icon: FaDog },
   { name: "Events", path: "events", icon: FaCalendarAlt },
   { name: "Donations", path: "donations", icon: FaHandHoldingHeart },
-  { name: "Statistics", path: "statistics", icon: FaChartBar },
   { name: "Shelters", path: "shelters", icon: FaHome },
+  { name: "Statistics", path: "statistics", icon: FaChartBar },
 ];
 
 const Sidebar = ({ isMinimized, setIsMinimized }) => {
