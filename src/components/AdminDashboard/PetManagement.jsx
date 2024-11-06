@@ -35,27 +35,27 @@ const PetManagement = () => {
     },
   };
   const [editingPet, setEditingPet] = useState({
-    name: "",
-    species: "",
-    breed: "",
-    age: 0,
-    gender: "",
-    description: "",
-    imageUrl: "",
-    status: "Available",
-    shelterId: 0,
+    Name: "",
+    Species: "",
+    Breed: "",
+    Age: 0,
+    Gender: "",
+    Description: "",
+    ImageURL: "",
+    Status: "Available",
+    ShelterId: 0,
   });
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newPet, setNewPet] = useState({
-    name: "",
-    species: "",
-    breed: "",
-    age: 0,
-    gender: "",
-    description: "",
-    imageUrl: "",
-    shelterId: 0,
+    Name: "",
+    Species: "",
+    Breed: "",
+    Age: 0,
+    Gender: "",
+    Description: "",
+    ImageURL: "",
+    ShelterId: 0,
   });
 
   useEffect(() => {
@@ -127,14 +127,14 @@ const PetManagement = () => {
       await api.post("/api/Pets/AddPet", newPet);
       setIsAddModalOpen(false);
       setNewPet({
-        name: "",
-        species: "",
-        breed: "",
-        age: 0,
-        gender: "",
-        description: "",
-        imageUrl: "",
-        shelterId: 0,
+        Name: "",
+        Species: "",
+        Breed: "",
+        Age: 0,
+        Gender: "",
+        Description: "",
+        ImageURL: "",
+        ShelterId: 0,
       });
       fetchPets();
     } catch (err) {
