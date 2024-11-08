@@ -3,6 +3,8 @@ import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import { Fragment } from "react";
 import { api } from "../../services/api";
+import signalRService from "../../services/signalRService";
+import { toast } from "react-toastify";
 import "./admin-dashboard.scss";
 
 const PetManagement = () => {
@@ -60,7 +62,7 @@ const PetManagement = () => {
 
   useEffect(() => {
     fetchPets();
-  });
+  }, []);
 
   const fetchPets = async () => {
     try {
@@ -86,6 +88,26 @@ const PetManagement = () => {
   const filteredPets = pets.filter((pet) =>
     pet.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
+
+  useEffect(() => {
+    fetchPets();
+
+    const initSignalR = async () => {
+      await signalRService.startConnection();
+
+      signalRService.addPetStatusListener((petName, status) => {
+        toast.info(`Pet "${petName}" status updated to ${status}`);
+        fetchPets(); // Refresh pet list
+      });
+    };
+
+    initSignalR();
+
+    return () => {
+      signalRService.removeListeners();
+      signalRService.stopConnection();
+    };
+  }, []);
 
   const indexOfLastPet = currentPage * petsPerPage;
   const indexOfFirstPet = indexOfLastPet - petsPerPage;
@@ -136,8 +158,10 @@ const PetManagement = () => {
         ImageURL: "",
         ShelterId: 0,
       });
+      toast.success("Pet added successfully");
       fetchPets();
     } catch (err) {
+      toast.error("Failed to add pet");
       setError("Failed to add pet");
     }
   };
@@ -148,15 +172,15 @@ const PetManagement = () => {
         `/api/Pets/MarkPetAs/${petId}`,
         JSON.stringify(newStatus),
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         },
       );
+      const pet = pets.find((p) => p.id === petId);
+      toast.success(`Status updated to ${newStatus} for ${pet.name}`);
       fetchPets();
     } catch (err) {
+      toast.error("Failed to update pet status");
       setError("Failed to update pet status");
-      console.error("Status update error:", err);
     }
   };
 
@@ -165,7 +189,7 @@ const PetManagement = () => {
     try {
       await api.put(`/api/Pets/UpdatePet/${editingPet.id}`, editingPet);
       setIsEditModalOpen(false);
-      fetchPets(); // Refresh the pet list
+      fetchPets();
     } catch (err) {
       setError("Failed to update pet");
     }
@@ -476,7 +500,7 @@ const PetManagement = () => {
                     >
                       {pet.status}
                     </span>
-                    <Menu as="div" className="relative">
+                    <Menu as="div" className="relative inline-block text-left">
                       <div>
                         <Menu.Button className="inline-flex justify-center items-center px-2 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none">
                           Change
@@ -497,21 +521,11 @@ const PetManagement = () => {
                         leaveTo="transform opacity-0 scale-95"
                       >
                         <Menu.Items
-                          className={`fixed transform z-50 w-40 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
-                          style={{
-                            top: "auto",
-                            left: (event) => {
-                              const rect = event.target.getBoundingClientRect();
-                              return `${rect.left}px`;
-                            },
-                            bottom: (event) => {
-                              const rect = event.target.getBoundingClientRect();
-                              const windowHeight = window.innerHeight;
-                              return rect.bottom + 180 > windowHeight
-                                ? `${windowHeight - rect.bottom + 40}px`
-                                : "auto";
-                            },
-                          }}
+                          className={`absolute z-50 w-40 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${
+                            currentPets.indexOf(pet) >= currentPets.length - 3
+                              ? "bottom-full mb-2"
+                              : "top-full mt-2"
+                          } right-0`}
                         >
                           <div className="py-1">
                             {Object.values(PET_STATUSES).map(({ label }) => (

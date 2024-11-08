@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
+import { toast } from "react-toastify";
 import "./admin-dashboard.scss";
 
 const EventManagement = () => {
@@ -59,8 +60,10 @@ const EventManagement = () => {
     if (window.confirm("Are you sure you want to delete this event?")) {
       try {
         await api.delete(`/api/Event/DeleteEvent/${eventId}`);
+        toast.success("Event deleted successfully");
         setEvents(events.filter((event) => event.id !== eventId));
       } catch (err) {
+        toast.error("Failed to delete event");
         setError("Failed to delete event");
       }
     }
@@ -83,8 +86,10 @@ const EventManagement = () => {
         location: "",
         shelterId: 0,
       });
+      toast.success("Event added successfully");
       fetchEvents();
     } catch (err) {
+      toast.error("Failed to add event");
       setError("Failed to add event");
     }
   };
@@ -94,8 +99,10 @@ const EventManagement = () => {
     try {
       await api.put(`/api/Event/UpdateEvent/${editingEvent.id}`, editingEvent);
       setIsEditModalOpen(false);
+      toast.success("Event updated successfully");
       fetchEvents();
     } catch (err) {
+      toast.error("Failed to update event");
       setError("Failed to update event");
     }
   };

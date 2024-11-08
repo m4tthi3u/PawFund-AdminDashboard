@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import "./admin-dashboard.scss";
+import { toast } from "react-toastify";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -52,8 +53,10 @@ const UserManagement = () => {
         email: "",
         password: "",
       });
+      toast.success("User added successfully");
       fetchUsers();
     } catch (err) {
+      toast.error("Failed to add user");
       setError("Failed to add user");
     }
   };
@@ -63,8 +66,10 @@ const UserManagement = () => {
     try {
       await api.put(`/api/User/UpdateUser/${editingUser.id}`, editingUser);
       setIsEditModalOpen(false);
+      toast.success("User updated successfully");
       fetchUsers(); // Refresh the user list
     } catch (err) {
+      toast.error("Failed to update user");
       setError("Failed to update user");
     }
   };
@@ -290,8 +295,10 @@ const UserManagement = () => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         await api.delete(`/api/User/DeleteUser/${userId}`);
+        toast.success("User deleted successfully");
         setUsers(users.filter((user) => user.id !== userId));
       } catch (err) {
+        toast.error("Failed to delete user");
         setError("Failed to delete user");
       }
     }
