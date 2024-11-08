@@ -26,7 +26,7 @@ const UserManagement = () => {
 
   useEffect(() => {
     fetchUsers();
-  });
+  }, []);
 
   const fetchUsers = async () => {
     try {

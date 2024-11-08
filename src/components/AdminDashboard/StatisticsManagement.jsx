@@ -47,7 +47,7 @@ const StatisticsManagement = () => {
 
   useEffect(() => {
     fetchStatistics();
-  });
+  }, []);
 
   const fetchStatistics = async () => {
     try {
