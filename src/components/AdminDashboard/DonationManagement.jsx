@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import signalRService from "../../services/signalRService";
+import { toast } from "react-toastify";
 import { api } from "../../services/api";
 
 const DonationManagement = () => {
@@ -15,6 +17,7 @@ const DonationManagement = () => {
     userId: 0,
     shelterId: 0,
     petId: 0,
+    petName: "",
     amount: 0,
     paymentMethod: "CreditCard",
   });
@@ -37,7 +40,7 @@ const DonationManagement = () => {
 
   useEffect(() => {
     fetchDonations();
-  });
+  }, []);
 
   const fetchDonations = async () => {
     try {
@@ -50,6 +53,26 @@ const DonationManagement = () => {
     }
   };
 
+  useEffect(() => {
+    fetchDonations();
+
+    const initSignalR = async () => {
+      await signalRService.startConnection();
+
+      signalRService.addDonationListener((petName, amount) => {
+        toast.success(`New donation of $${amount} received for ${petName}!`);
+        fetchDonations(); // Refresh donations list
+      });
+    };
+
+    initSignalR();
+
+    return () => {
+      signalRService.removeListeners();
+      signalRService.stopConnection();
+    };
+  }, []);
+
   const handleAddDonation = async (e) => {
     e.preventDefault();
     try {
@@ -59,6 +82,7 @@ const DonationManagement = () => {
         userId: 0,
         shelterId: 0,
         petId: 0,
+        petName: "",
         amount: 0,
         paymentMethod: "CreditCard",
       });
@@ -79,6 +103,19 @@ const DonationManagement = () => {
       fetchDonations();
     } catch (err) {
       setError("Failed to update donation");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this donation?")) {
+      try {
+        await api.delete(`/api/Donation/DeleteDonation/${id}`);
+        toast.success("Donation deleted successfully");
+        fetchDonations(); // Refresh the list
+      } catch (err) {
+        toast.error("Failed to delete donation");
+        setError("Failed to delete donation");
+      }
     }
   };
 
@@ -154,6 +191,24 @@ const DonationManagement = () => {
                   setNewDonation({
                     ...newDonation,
                     petId: parseInt(e.target.value),
+                  })
+                }
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Pet Name
+              </label>
+              <input
+                type="text"
+                value={newDonation.petName}
+                onChange={(e) =>
+                  setNewDonation({
+                    ...newDonation,
+                    petName: e.target.value,
                   })
                 }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -438,6 +493,12 @@ const DonationManagement = () => {
                     className="text-blue-600 hover:text-blue-900 px-3 py-1 rounded-md text-sm font-medium"
                   >
                     Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(donation.id)}
+                    className="text-red-600 hover:text-red-900 px-3 py-1 rounded-md text-sm font-medium"
+                  >
+                    Delete
                   </button>
                 </td>
               </tr>
