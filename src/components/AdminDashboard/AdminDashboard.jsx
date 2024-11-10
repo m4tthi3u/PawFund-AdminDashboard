@@ -10,6 +10,7 @@ import EventManagement from "./EventManagement";
 import DonationManagement from "./DonationManagement";
 import StatisticsManagement from "./StatisticsManagement";
 import ShelterManagement from "./ShelterManagement";
+import CopyrightPage from "./CopyrightPage";
 
 const AdminDashboard = ({ user }) => {
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
@@ -118,6 +119,7 @@ const AdminDashboard = ({ user }) => {
                 <Route path="donations" element={<DonationManagement />} />
                 <Route path="statistics" element={<StatisticsManagement />} />
                 <Route path="shelters" element={<ShelterManagement />} />
+                <Route path="copyright" element={<CopyrightPage />} />
               </Routes>
             </motion.div>
           </AnimatePresence>
