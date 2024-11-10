@@ -9,6 +9,7 @@ import {
   FaChartBar,
   FaHome,
   FaChevronLeft,
+  FaCopyright,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import "./sidebar.scss";
@@ -20,6 +21,7 @@ const navItems = [
   { name: "Donations", path: "donations", icon: FaHandHoldingHeart },
   { name: "Shelters", path: "shelters", icon: FaHome },
   { name: "Statistics", path: "statistics", icon: FaChartBar },
+  { name: "Copyright", path: "copyright", icon: FaCopyright },
 ];
 
 const Sidebar = ({ isMinimized, setIsMinimized }) => {
