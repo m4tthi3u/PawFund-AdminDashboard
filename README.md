@@ -13,12 +13,12 @@
 
 ## 📋 Overview
 
-PawFund Admin Dashboard is a comprehensive web-based management interface designed to streamline the administration of pet-related fundraising and support activities. Built with modern web technologies, it provides a robust platform for managing donations, events, and shelter operations.
+The PawFund Administrative Dashboard is a comprehensive web-based management interface crafted to streamline the administration of pet-related fundraising and support activities. Developed with cutting-edge web technologies, it offers a robust platform for managing donations, events, and shelter operations.  
 
 ## ✨ Key Features
 
-- 🎨 **Modern UI/UX** - Sleek, responsive interface optimized for all devices
-- 📊 **Real-time Analytics** - Dynamic data visualization and reporting
+- 🎨 **Polished UI/UX** - Elegant, responsive interface optimised for viewing  
+- 📊 **Real-time Analytics** - Dynamic data visualisation and reporting
 - 💰 **Campaign Management** - Create and track fundraising campaigns
 - 👥 **Donor Management** - Comprehensive donor tracking and engagement tools
 - 📈 **Financial Reports** - Detailed financial analytics and reporting
@@ -31,7 +31,7 @@ PawFund Admin Dashboard is a comprehensive web-based management interface design
 
 Before you begin, ensure you have the following installed:
 - Node.js (version 20 or higher)
-- npm or yarn package manager
+- npm or yarn or bun package manager
 
 ### Installation
 
@@ -46,13 +46,17 @@ cd PawFund-AdminDashboard
 npm install
 # or
 yarn install
+# or
+bun install
 ```
 
 3. **Start the development server**
 ```bash
-npm run dev
+npm run start
 # or
-yarn dev
+yarn start
+# or
+bun start
 ```
 
 4. **Build for production**
@@ -60,6 +64,8 @@ yarn dev
 npm run build
 # or
 yarn build
+# or
+bun run build
 ```
 
 ## 🛠️ Technology Stack
@@ -116,9 +122,9 @@ We welcome contributions! Here's how you can help:
    ```
 5. Open a **Pull Request**
 
-## 📄 License
+## 📄 Licence
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/m4tthi3u/PawFund-AdminDashboard?tab=MIT-1-ov-file#MIT-1-ov-file) file for details.
+This project is licenced under the MIT Licence - see the [LICENCE](https://github.com/m4tthi3u/PawFund-AdminDashboard?tab=MIT-1-ov-file#MIT-1-ov-file) file for details.
 
 ## 👥 Contact
 
