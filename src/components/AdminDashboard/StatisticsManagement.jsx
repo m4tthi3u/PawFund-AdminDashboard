@@ -13,6 +13,13 @@ import {
   Legend,
   Cell,
   ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  BarChart,
+  Bar,
 } from "recharts";
 import { api } from "../../services/api";
 
@@ -29,9 +36,10 @@ const StatisticsManagement = () => {
     totalDonations: 0,
     monthlyAdoptions: [],
     monthlyDonations: [],
+    monthlyEvents: [],
   });
   const [loading, setLoading] = useState(true);
-  const [setError] = useState(null);
+  const [error, setError] = useState(null);
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
   const petStatusData = [
     { name: "Adopted", value: stats.adoptedPets },
@@ -69,9 +77,13 @@ const StatisticsManagement = () => {
 
       // Fetch events
       const eventsResponse = await api.get("/api/Event/GetEvents");
+      const events = eventsResponse.data;
+      const monthlyEvents = calculateMonthlyStats(events, "date");
 
       // Fetch donations
       const donationsResponse = await api.get("/api/Donation/GetDonations");
+      const donations = donationsResponse.data;
+      const monthlyDonations = calculateMonthlyStats(donations, "donationDate");
 
       const usersResponse = await api.get("/api/User/GetUsers");
       const users = usersResponse.data;
@@ -91,14 +103,13 @@ const StatisticsManagement = () => {
         standardUsers: standardCount,
         staffUsers: staffCount,
         totalEvents: eventsResponse.data.length,
-        totalDonations: donationsResponse.data.reduce(
-          (acc, curr) => acc + curr.amount,
-          0,
-        ),
+        totalDonations: donations.reduce((acc, curr) => acc + curr.amount, 0),
         monthlyAdoptions: calculateMonthlyStats(
           pets.filter((pet) => pet.status === "Adopted"),
+          "adoptionDate", // Assuming adoption date field
         ),
-        monthlyDonations: calculateMonthlyStats(donationsResponse.data),
+        monthlyEvents: monthlyEvents,
+        monthlyDonations: monthlyDonations,
       });
 
       setLoading(false);
@@ -108,19 +119,18 @@ const StatisticsManagement = () => {
     }
   };
 
-  const calculateMonthlyStats = (data) => {
-    // Group data by month
+  const calculateMonthlyStats = (data, dateField) => {
     const monthlyData = data.reduce((acc, item) => {
-      // Ensure the date is valid
-      const date = new Date(item.createdAt || item.date); // Try createdAt first, fall back to date
+      const date = new Date(item[dateField]);
+
       if (date instanceof Date && !isNaN(date)) {
-        // Format month and year
         const monthYear = `${date.toLocaleString("default", { month: "short" })} ${date.getFullYear()}`;
-        if (item.amount) {
-          // For donations, sum the amounts
+
+        if ("amount" in item) {
+          // For donations
           acc[monthYear] = (acc[monthYear] || 0) + item.amount;
         } else {
-          // For adoptions, count occurrences
+          // For other statistics (count)
           acc[monthYear] = (acc[monthYear] || 0) + 1;
         }
       }
@@ -133,7 +143,6 @@ const StatisticsManagement = () => {
         count: value,
       }))
       .sort((a, b) => {
-        // Sort by date (most recent first)
         const [aMonth, aYear] = a.month.split(" ");
         const [bMonth, bYear] = b.month.split(" ");
         return (
@@ -216,6 +225,44 @@ const StatisticsManagement = () => {
       </div>
 
       {/* Charts Section */}
+      {/* Monthly Charts Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* Monthly Donations Chart */}
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-lg font-semibold mb-4">Monthly Donations</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={stats.monthlyDonations}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" angle={-45} textAnchor="end" height={60} />
+              <YAxis />
+              <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="count"
+                name="Donations"
+                stroke="#8884d8"
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Monthly Events Chart */}
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-lg font-semibold mb-4">Monthly Events</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={stats.monthlyEvents}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" angle={-45} textAnchor="end" height={60} />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" name="Events" fill="#82ca9d" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {/* Pet Status Distribution */}
         <div className="bg-white p-6 rounded-lg shadow-lg">
