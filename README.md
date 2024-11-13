@@ -122,6 +122,14 @@ We welcome contributions! Here's how you can help:
    ```
 5. Open a **Pull Request**
 
+## 👨‍💻 Development Environment
+
+This project was developed using [Zed](https://zed.dev), a modern, high-performance code editor optimized for productive development. Zed was chosen for its:
+- Blazing fast performance
+- Clean, distraction-free interface
+- Excellent React/JavaScript support
+- Built-in collaboration features
+
 ## 📄 Licence
 
 This project is licenced under the MIT Licence - see the [LICENCE](https://github.com/m4tthi3u/PawFund-AdminDashboard?tab=MIT-1-ov-file#MIT-1-ov-file) file for details.
