@@ -379,8 +379,8 @@ const UserManagement = () => {
           </tbody>
         </table>
       </div>
-      {renderEditModal()}
       {renderPagination()}
+      {renderEditModal()}
       {renderAddModal()}
     </div>
   );
